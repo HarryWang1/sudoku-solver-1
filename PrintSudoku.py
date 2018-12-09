@@ -27,7 +27,6 @@ class PrintSudoko:
         # f = open("sa.txt", "w")
         # f.write(output_string)
 
-
     def __get_cutoff_string(self, i, string):
         if self.__cutoff_grid(i):
             return string * 2
@@ -54,7 +53,7 @@ class PrintSudoko:
 
 
 
-# Testing
+# Testing ------------------------------------------------------------
 
 # testing with a 2x2 grid
 elements12 = [1,2] * 2
