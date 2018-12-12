@@ -11,7 +11,9 @@ class CUtil:
         for row in initial_board:
             for data in row:
                 identifier = board_identifiers[iterator]
-                board_dictionary[identifier] = data
+                board_dictionary[identifier] = str(data)
+                if data == 0:
+                    board_dictionary[identifier] = "123456789"
                 iterator += 1
 
         return board_dictionary
