@@ -30,6 +30,6 @@ class Constraint:
     """
     def __init__(self, board, constraints, grid_size):
         self.grid_size = grid_size
-        self.neighbour = constraints  # peers
+        self.neighbour = constraints
         self.constraints_tuples = CUtil.constraints_as_tuple(self.neighbour)  # constraints as tuples
-        self.board = board #values
+        self.board = board

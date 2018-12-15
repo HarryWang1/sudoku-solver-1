@@ -1,7 +1,7 @@
 from copy import deepcopy
 from ForwardCheck import *
 import MinimumRemainingValueHeuristic
-
+import random
 
 """
     By now we have a Constraint satisfaction problem. Now we have to assign values to each variable by 
@@ -28,10 +28,10 @@ class BackTracking:
             constraints established.
     """
 
-    def backtracking_search(self, constraint):
-        return self.backtrack({}, constraint)
+    def backtracking_search(self, constraint, mrv=True):
+        return self.backtrack({}, constraint, mrv)
 
-    def backtrack(self, state, constraint):
+    def backtrack(self, state, constraint, mrv):
 
         """
         if state is complete, then return state (If all the variable has a particular value)
@@ -46,8 +46,10 @@ class BackTracking:
             select unassigned variable and assign values to it
             Heuristics -> MRV (Minimum remaining value)
         """
-
         cell = MinimumRemainingValueHeuristic.get_minimum_remaining_value(state, constraint)
+        if not mrv:
+            cell = self.select_random_variables(state, constraint)
+
         domain = deepcopy(constraint.board)
 
         for value in constraint.board[cell]:
@@ -62,10 +64,10 @@ class BackTracking:
                 """
                 state[cell] = value
 
-                inferences = {}
-                inferences = self.forward_check.inference(state, inferences, constraint, cell, value)
-                if inferences != -1:
-                    result = self.backtrack(state, constraint)
+                deductions = {}
+                deductions = self.forward_check.infer(state, deductions, constraint, cell, value)
+                if deductions != -1:
+                    result = self.backtrack(state, constraint, mrv)
                     if result != -1:
                         return result
 
@@ -77,13 +79,13 @@ class BackTracking:
     def is_complete(self, assignment, constraint):
         return set(assignment.keys()) == set(constraint.board.keys())
 
-    def select_random_variables(self, assignment, constraint):
-        unassigned_variables = dict(
-            (squares, len(constraint.board[squares])) for squares in constraint.board if
-            squares not in assignment.keys())
-        return list(unassigned_variables.keys())[0]
+    def select_random_variables(self, state, constraint):
+        unassigned_cell = {}
+        for cell in constraint.board:
+            if cell not in state.keys():
+                unassigned_cell.update({cell: len(constraint.board[cell])})
+        return list(unassigned_cell.keys())[random.randint(0,len(unassigned_cell) - 1)]
 
-    # CHECKS IF THE GIVEN NEW ASSIGNMENT IS CONSISTENT
     def is_consistent(self, var, value, assignment, constraint):
         for neighbor in constraint.neighbour[var]:
             if neighbor in assignment.keys() and assignment[neighbor] == value:
